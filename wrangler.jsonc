@@ -1,0 +1,22 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "morvane-repo",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-09-01",
+	"account_id": "f87ee4b9600f437b8da1104d077418c3",
+	"routes": [
+		{
+			"pattern": "morvane.doughmination.gay",
+			"custom_domain": true
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "REPO",
+			"bucket_name": "morvane-repo"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}
