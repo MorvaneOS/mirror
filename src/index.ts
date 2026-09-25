@@ -14,6 +14,8 @@
 // UPLOAD_TOKEN (set with `wrangler secret put UPLOAD_TOKEN`) and only works
 // under install/.
 
+import { homepage, type Release } from "./home";
+
 export interface Env {
   REPO: R2Bucket;
   UPLOAD_TOKEN?: string;
@@ -39,7 +41,14 @@ export default {
     const redirect = await installRedirect(env, key);
     if (redirect) return redirect;
 
-    if (key === "" || key.endsWith("/")) {
+    if (key === "") {
+      const html = homepage(await latestRelease(env));
+      return new Response(request.method === "HEAD" ? null : html, {
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" },
+      });
+    }
+
+    if (key.endsWith("/")) {
       return listing(env, key, request);
     }
 
@@ -113,6 +122,17 @@ async function installVersions(env: Env): Promise<string[]> {
       }
       return 0;
     });
+}
+
+// The newest ISO, for the homepage
+async function latestRelease(env: Env): Promise<Release | null> {
+  const version = (await installVersions(env)).at(-1);
+  if (!version) return null;
+  const iso = `install/${version}/morvaneos-${version}-x86_64.iso`;
+  const [object, checksum] = await Promise.all([env.REPO.head(iso), env.REPO.get(`${iso}.sha256`)]);
+  if (!object) return null;
+  const sha256 = checksum ? (await checksum.text()).split(/\s/)[0] : null;
+  return { version, size: object.size, sha256 };
 }
 
 // Uploads for the release script. Big files go in parts (R2 multipart uploads):

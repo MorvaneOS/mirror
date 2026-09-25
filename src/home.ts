@@ -1,0 +1,97 @@
+// The homepage at /. Kept plain on purpose: what MorvaneOS is, the latest ISO,
+// and how to use the repository.
+
+export interface Release {
+  version: string;
+  size: number;
+  sha256: string | null;
+}
+
+// svg/lockup-stacked/dark.svg from MorvaneOS/assets, with its colours turned
+// into CSS variables so the same logo works in light and dark mode
+const LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 599.87 463.04" role="img" aria-label="MorvaneOS Linux"><g transform="translate(109.94 -47.88) scale(3.8000)"><path fill="var(--logo-accent)" d="M59.046 31.901 A9.5 9.5 0 1 1 49.155 19.538 A8 8 0 0 0 59.046 31.901 Z"/><path fill="var(--logo-peaks)" d="M8 86 L32 30 L50 62 L68 30 L92 86 Z"/><circle cx="22" cy="18" r="1.8" fill="var(--logo-accent)"/><circle cx="80" cy="14" r="1.4" fill="var(--logo-accent)"/></g><path fill="var(--logo-name)" transform="translate(0.94 405.80)" d="M81.12 -74.26 81.95 -62.92 51.06 -9.36Q51.06 -9.36 50.02 -7.54Q48.98 -5.72 48 -3.12Q47.01 -0.52 47.01 2.08H45.97L41.91 -6.97ZM10.61 -7.59V0H-0.94V-1.04Q-0.83 -1.04 -0.05 -1.04Q0.73 -1.04 0.73 -1.04Q3.54 -1.04 5.72 -2.76Q7.9 -4.47 8.32 -7.59ZM15.18 -5.93Q15.18 -5.82 15.18 -5.72Q15.18 -5.62 15.18 -5.41Q15.18 -3.74 16.38 -2.34Q17.58 -0.94 19.24 -0.94H20.9V0H14.46V-5.93ZM16.95 -74.26H17.89L21.53 -63.86L14.56 0H7.38ZM17.89 -74.26 51.9 -18.41 45.97 2.08 15.18 -49.61ZM82.06 -74.26 91.94 0H75.19L69.99 -47.84L81.12 -74.26ZM88.71 -7.59H90.9Q91.42 -4.47 93.6 -2.76Q95.78 -1.04 98.49 -1.04Q98.49 -1.04 99.32 -1.04Q100.15 -1.04 100.15 -1.04V0H88.71ZM74.57 -5.93H75.3V0H68.95V-0.94H70.51Q72.28 -0.94 73.42 -2.34Q74.57 -3.74 74.57 -5.41Q74.57 -5.62 74.57 -5.72Q74.57 -5.82 74.57 -5.93ZM152.46 -74.26Q164.94 -74.26 174.15 -69.63Q183.35 -65 188.4 -56.58Q193.44 -48.15 193.44 -36.4Q193.44 -24.75 188.4 -16.28Q183.35 -7.8 174.15 -3.17Q164.94 1.46 152.46 1.46Q139.98 1.46 130.78 -3.17Q121.58 -7.8 116.58 -16.22Q111.59 -24.65 111.59 -36.4Q111.59 -48.05 116.58 -56.52Q121.58 -65 130.78 -69.63Q139.98 -74.26 152.46 -74.26ZM152.46 -2.91Q159.85 -2.91 165.2 -7.02Q170.56 -11.13 173.42 -18.62Q176.28 -26.1 176.28 -36.4Q176.28 -46.7 173.42 -54.18Q170.56 -61.67 165.2 -65.78Q159.85 -69.89 152.46 -69.89Q145.18 -69.89 139.83 -65.78Q134.47 -61.67 131.56 -54.18Q128.65 -46.7 128.65 -36.4Q128.65 -26.1 131.56 -18.62Q134.47 -11.13 139.83 -7.02Q145.18 -2.91 152.46 -2.91ZM231.09 -72.8H244.5Q249.18 -72.8 253.66 -71.76Q258.13 -70.72 261.61 -68.43Q265.1 -66.14 267.18 -62.4Q269.26 -58.66 269.26 -53.14Q269.26 -48.78 267.44 -44.46Q265.62 -40.14 261.87 -37.08Q258.13 -34.01 252.2 -33.38Q255.53 -32.34 258.28 -29.64Q261.04 -26.94 262.81 -24.23Q262.91 -24.02 264 -22.36Q265.1 -20.7 266.71 -18.25Q268.32 -15.81 270.09 -13.31Q271.86 -10.82 273.31 -8.94Q275.6 -6.14 277.47 -4.42Q279.34 -2.7 281.42 -1.92Q283.5 -1.14 286.21 -1.04V0H276.02Q270.4 0 265.82 -1.04Q261.25 -2.08 257.71 -4.42Q254.18 -6.76 251.58 -10.82Q250.74 -12.06 249.76 -13.99Q248.77 -15.91 247.73 -18.1Q246.69 -20.28 245.7 -22.31Q244.71 -24.34 243.98 -26Q243.26 -27.66 242.94 -28.6Q241.59 -31.93 239.77 -33.59Q237.95 -35.26 235.87 -35.57V-36.61Q236.18 -36.61 237.12 -36.61Q238.06 -36.61 239.1 -36.61Q241.9 -36.61 244.56 -37.75Q247.21 -38.9 249.29 -41.5Q251.37 -44.1 252.2 -48.67Q252.41 -49.61 252.56 -50.86Q252.72 -52.1 252.62 -53.66Q252.3 -61.15 248.87 -64.64Q245.44 -68.12 240.34 -68.22Q238.89 -68.33 237.17 -68.28Q235.46 -68.22 234.05 -68.22Q232.65 -68.22 232.13 -68.22Q232.13 -68.33 231.87 -69.42Q231.61 -70.51 231.35 -71.66Q231.09 -72.8 231.09 -72.8ZM232.44 -72.8V0H216.84V-72.8ZM217.15 -7.59V0H208.83V-1.04Q208.94 -1.04 209.51 -1.04Q210.08 -1.04 210.18 -1.04Q212.89 -1.04 214.81 -2.96Q216.74 -4.89 216.84 -7.59ZM217.15 -65.21H216.84Q216.74 -67.91 214.81 -69.84Q212.89 -71.76 210.18 -71.76Q210.08 -71.76 209.51 -71.76Q208.94 -71.76 208.83 -71.76V-72.8H217.15ZM232.13 -7.59H232.44Q232.44 -4.89 234.42 -2.96Q236.39 -1.04 239.1 -1.04Q239.3 -1.04 239.82 -1.04Q240.34 -1.04 240.34 -1.04V0H232.13ZM322.5 2.08 288.08 -72.18H306.7L328.85 -17.99ZM322.5 2.08 322.19 -10.61 348.61 -72.49H356.1L328.54 -11.54Q328.33 -10.92 327.55 -9.2Q326.77 -7.49 325.83 -5.3Q324.9 -3.12 324.22 -1.09Q323.54 0.94 323.44 2.08ZM345.49 -65.21Q346.84 -68.33 345.18 -70.04Q343.51 -71.76 341.54 -71.76H340.6V-72.8H362.86V-71.76Q362.86 -71.76 362.39 -71.76Q361.92 -71.76 361.92 -71.76Q359.63 -71.76 357.08 -70.25Q354.54 -68.74 352.87 -65.21ZM309.61 -65.21H291.3Q289.64 -68.74 287.09 -70.25Q284.54 -71.76 282.15 -71.76Q282.15 -71.76 281.74 -71.76Q281.32 -71.76 281.32 -71.76V-72.8H314.39V-71.76H313.46Q311.48 -71.76 309.97 -70.04Q308.46 -68.33 309.61 -65.21ZM393.22 -74.88 427.13 -0.62H408.51L386.88 -54.81ZM370.86 -7.59Q370.03 -5.51 370.55 -4.06Q371.07 -2.6 372.32 -1.82Q373.57 -1.04 374.82 -1.04H375.75V0H353.5V-1.04Q353.5 -1.04 353.96 -1.04Q354.43 -1.04 354.43 -1.04Q356.82 -1.04 359.37 -2.55Q361.92 -4.06 363.58 -7.59ZM393.22 -74.88 393.64 -62.19 367.85 -0.31H360.26L387.19 -61.26Q387.5 -61.88 388.28 -63.6Q389.06 -65.31 389.95 -67.5Q390.83 -69.68 391.56 -71.71Q392.29 -73.74 392.29 -74.88ZM404.14 -24.75V-20.38H373.57V-24.75ZM405.7 -7.59H423.9Q425.67 -4.06 428.17 -2.55Q430.66 -1.04 433.06 -1.04Q433.06 -1.04 433.47 -1.04Q433.89 -1.04 433.89 -1.04V0H400.82V-1.04H401.75Q403.83 -1.04 405.39 -2.76Q406.95 -4.47 405.7 -7.59ZM450.53 -74.36 516.88 -11.13 518.13 1.46 451.78 -61.67ZM451.05 -7.38V0H442.42V-1.04Q442.42 -1.04 443.35 -1.04Q444.29 -1.04 444.39 -1.04Q446.99 -1.04 448.86 -2.91Q450.74 -4.78 450.74 -7.38ZM465.61 -7.38Q465.61 -4.78 467.48 -2.91Q469.35 -1.04 471.95 -1.04Q472.06 -1.04 472.99 -1.04Q473.93 -1.04 473.93 -1.04V0H465.3V-7.38ZM450.53 -74.36 465.5 -58.45 465.61 0H450.74V-61.36Q450.74 -67.18 450.11 -70.77Q449.49 -74.36 449.49 -74.36ZM517.82 -72.8V-11.86Q517.82 -8.01 518.13 -4.94Q518.44 -1.87 518.75 -0.21Q519.06 1.46 519.06 1.46H518.13L503.05 -15.39V-72.8ZM526.14 -72.8V-71.76Q526.14 -71.76 525.2 -71.76Q524.26 -71.76 524.26 -71.76Q521.66 -71.76 519.79 -69.94Q517.92 -68.12 517.82 -65.42H517.5V-72.8ZM494.62 -72.8H503.26V-65.42H503.05Q502.94 -68.12 501.12 -69.94Q499.3 -71.76 496.6 -71.76Q496.6 -71.76 495.66 -71.76Q494.73 -71.76 494.62 -71.76ZM563.89 -72.8V0H548.29V-72.8ZM591.34 -4.47 593.84 0H563.58V-4.47ZM587.5 -38.06V-33.7H563.58V-38.06ZM592.59 -72.8V-68.33H563.58V-72.8ZM598.94 -21.22 594.15 0H573.77L577.51 -4.47Q582.71 -4.47 586.66 -6.5Q590.62 -8.53 593.42 -12.32Q596.23 -16.12 597.9 -21.22ZM587.5 -33.9V-23.92H586.46V-24.86Q586.46 -28.6 583.96 -31.1Q581.46 -33.59 577.62 -33.7V-33.9ZM587.5 -47.84V-37.86H577.62V-38.06Q581.46 -38.17 583.96 -40.72Q586.46 -43.26 586.46 -47.01V-47.84ZM592.59 -68.64V-56.47H591.55V-57.72Q591.55 -62.5 588.69 -65.42Q585.83 -68.33 580.94 -68.43V-68.64ZM592.59 -74.67V-71.66L579.9 -72.8Q582.19 -72.8 584.74 -73.11Q587.29 -73.42 589.47 -73.84Q591.66 -74.26 592.59 -74.67ZM548.6 -7.59V0H540.28V-1.04Q540.28 -1.04 540.96 -1.04Q541.63 -1.04 541.63 -1.04Q544.34 -1.04 546.26 -2.96Q548.18 -4.89 548.29 -7.59ZM548.6 -65.21H548.29Q548.18 -67.91 546.26 -69.84Q544.34 -71.76 541.63 -71.76Q541.63 -71.76 540.96 -71.76Q540.28 -71.76 540.28 -71.76V-72.8H548.6Z"/><path fill="var(--logo-accent)" transform="translate(186.46 462.70)" d="M3.91 0V-24.82H6.97V-2.79H18.19V0ZM54.57 0V-2.79H59.64V-22.03H54.57V-24.82H67.83V-22.03H62.76V-2.79H67.83V0ZM105.06 0V-24.82H109.14L116.72 -3.57Q116.65 -4.42 116.57 -5.66Q116.48 -6.9 116.43 -8.28Q116.38 -9.66 116.38 -10.88V-24.82H119.34V0H115.26L107.71 -21.25Q107.78 -20.43 107.85 -19.19Q107.92 -17.95 107.97 -16.58Q108.02 -15.2 108.02 -13.94V0ZM163.2 0.34Q159.73 0.34 157.9 -1.58Q156.06 -3.5 156.06 -6.8V-24.82H159.12V-6.8Q159.12 -4.76 160.12 -3.57Q161.13 -2.38 163.2 -2.38Q165.24 -2.38 166.26 -3.57Q167.28 -4.76 167.28 -6.8V-24.82H170.34V-6.8Q170.34 -3.47 168.52 -1.56Q166.7 0.34 163.2 0.34ZM205.36 0 212.5 -12.58 205.73 -24.82H209.27L213.11 -17.48Q213.42 -16.9 213.74 -16.23Q214.06 -15.57 214.27 -15.2Q214.44 -15.57 214.76 -16.23Q215.08 -16.9 215.39 -17.48L219.3 -24.82H222.67L215.9 -12.78L223.04 0H219.54L215.29 -7.89Q214.98 -8.47 214.66 -9.13Q214.34 -9.79 214.17 -10.2Q214 -9.79 213.67 -9.15Q213.35 -8.5 213.04 -7.92L208.76 0Z"/></svg>`;
+const FAVICON = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100.00 100.00' width='100' height='100' role='img' aria-label='MorvaneOS'><path fill='%23F4A6C6' d='M8 86 L32 30 L50 62 L68 30 L92 86 Z'/></svg>";
+
+export function homepage(latest: Release | null): string {
+  const download = latest
+    ? `<p><a class="button" href="/install/latest">Download MorvaneOS ${latest.version}</a></p>
+<p class="meta">x86_64 · ${Math.round(latest.size / 1024 / 1024)} MB · <a href="/install/latest.sha256">SHA-256</a> · <a href="/install/">older versions</a></p>
+${latest.sha256 ? `<p class="meta"><code class="hash">${latest.sha256}</code></p>` : ""}`
+    : `<p>No ISO has been published yet. Check back soon.</p>`;
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MorvaneOS Linux</title>
+<meta name="description" content="MorvaneOS is an Arch-based Linux distribution with runit, built on Artix.">
+<link rel="icon" href="${FAVICON}">
+<style>
+:root {
+  color-scheme: dark light;
+  --bg: #120C16; --text: #F5EEF3; --muted: #B8AEC0; --link: #B9A3E6;
+  --button: #F4A6C6; --button-text: #120C16; --code: #1F1626; --line: #3A2D42;
+  --logo-peaks: #F4A6C6; --logo-name: #F4A6C6; --logo-accent: #B9A3E6;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #F5EEF3; --text: #120C16; --muted: #5E5064; --link: #8E4570;
+    --button: #8E4570; --button-text: #F5EEF3; --code: #EADFE7; --line: #D9C8D4;
+    --logo-peaks: #8E4570; --logo-name: #120C16; --logo-accent: #8E4570;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 3rem 1rem; background: var(--bg); color: var(--text);
+  font: 1.0625rem/1.6 system-ui, sans-serif;
+}
+main { max-width: 38rem; margin: 0 auto; }
+header { text-align: center; margin-bottom: 2.5rem; }
+header svg { width: 13rem; height: auto; }
+header p { color: var(--muted); margin: 1rem 0 0; }
+h2 { font-size: 1.15rem; margin: 2.5rem 0 0.5rem; }
+a { color: var(--link); }
+.button {
+  display: inline-block; padding: 0.7rem 1.4rem; border-radius: 0.5rem;
+  background: var(--button); color: var(--button-text); font-weight: 600; text-decoration: none;
+}
+.button:hover, .button:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+.meta { color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0; }
+code, pre { font-family: ui-monospace, "JetBrains Mono", monospace; font-size: 0.9rem; }
+pre { background: var(--code); padding: 0.9rem 1rem; border-radius: 0.5rem; overflow-x: auto; }
+:not(pre) > code { white-space: nowrap; }
+.hash { white-space: normal; word-break: break-all; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+${LOGO}
+<p>An Arch-based Linux distribution with runit, built on Artix.</p>
+</header>
+
+<p>MorvaneOS is a young project and still in development, so expect some rough edges.</p>
+
+<h2>Download</h2>
+${download}
+
+<h2>Installing</h2>
+<p>Write the ISO to a USB stick, boot from it, connect to the internet and run <code>morvane-install</code>. The live system's welcome message walks you through it.</p>
+
+<h2>The repository</h2>
+<p>MorvaneOS packages come from the <code>[morvane]</code> repository, listed in <code>/etc/pacman.conf</code> above Artix's own:</p>
+<pre>[morvane]
+SigLevel = Optional TrustAll
+Server = https://morvane.doughmination.gay/$repo/os/$arch</pre>
+<p><a href="/morvane/os/x86_64/">Browse the packages</a></p>
+
+<footer>
+<a href="https://github.com/MorvaneOS">MorvaneOS on GitHub</a>
+</footer>
+</main>
+</body>
+</html>
+`;
+}
