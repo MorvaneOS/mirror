@@ -15,6 +15,7 @@
 // under install/.
 
 import { homepage, type Release } from "./home";
+import { FAVICON, PALETTE } from "./style";
 
 export interface Env {
   REPO: R2Bucket;
@@ -207,7 +208,7 @@ function text(body: string, status = 200): Response {
   return new Response(body, { status, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
 }
 
-// Plain directory index, so the repo can be browsed like a normal mirror.
+// Directory index, so the repo can be browsed like a normal mirror.
 // Asking for application/json gives the same as data (the release script uses it).
 async function listing(env: Env, prefix: string, request: Request): Promise<Response> {
   const dirs: string[] = [];
@@ -234,18 +235,94 @@ async function listing(env: Env, prefix: string, request: Request): Promise<Resp
     });
   }
 
-  const name = (path: string) => escape(path.slice(prefix.length));
-  const rows = [
-    ...(prefix === "" ? [] : [`<a href="../">../</a>`]),
-    ...dirs.map((d) => `<a href="${name(d)}">${name(d)}</a>`),
-    ...files.map((f) => `<a href="${name(f.key)}">${name(f.key)}</a>  ${f.size} bytes  ${f.uploaded.toISOString()}`),
-  ];
-  const title = `MorvaneOS repository: /${escape(prefix)}`;
-  const html = `<!doctype html><meta charset="utf-8"><title>${title}</title><h1>${title}</h1><pre>\n${rows.join("\n")}\n</pre>\n`;
-
+  const html = listingPage(prefix, dirs, files);
   return new Response(request.method === "HEAD" ? null : html, {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" },
   });
+}
+
+// The listing as a page in the MorvaneOS colours: folders first, then files with
+// their size and upload date
+function listingPage(prefix: string, dirs: string[], files: R2Object[]): string {
+  const name = (path: string) => escape(path.slice(prefix.length));
+
+  // Breadcrumb: MorvaneOS / morvane / os / x86_64 /, each part linking to its folder
+  const parts = prefix.split("/").filter(Boolean);
+  const crumbs = [
+    `<a href="/">MorvaneOS</a>`,
+    ...parts.map((part, i) => `<a href="/${parts.slice(0, i + 1).map(encodeURIComponent).join("/")}/">${escape(part)}</a>`),
+  ].join(`<span class="sep">/</span>`);
+
+  const rows = [
+    ...(prefix === "" ? [] : [`<tr><td><a href="../">../</a></td><td></td><td></td></tr>`]),
+    ...dirs.map((d) => `<tr><td><a class="dir" href="${name(d)}">${name(d)}</a></td><td class="num">-</td><td></td></tr>`),
+    ...files.map(
+      (f) => `<tr><td><a href="${name(f.key)}">${name(f.key)}</a></td>` +
+        `<td class="num" title="${f.size} bytes">${humanSize(f.size)}</td>` +
+        `<td class="date"><time datetime="${f.uploaded.toISOString()}">${f.uploaded.toISOString().slice(0, 16).replace("T", " ")}</time></td></tr>`,
+    ),
+  ];
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>/${escape(prefix)} · MorvaneOS</title>
+<link rel="icon" href="${FAVICON}">
+<style>
+${PALETTE}
+body {
+  margin: 0; padding: 2.5rem 1rem; background: var(--bg); color: var(--text);
+  font: 1rem/1.5 system-ui, sans-serif;
+}
+main { max-width: 60rem; margin: 0 auto; }
+h1 { font-size: 1.3rem; font-weight: 600; margin: 0 0 1.5rem; overflow-wrap: anywhere; }
+h1 a { text-decoration: none; }
+h1 a:hover, h1 a:focus-visible { text-decoration: underline; }
+.sep { color: var(--muted); margin: 0 0.35rem; }
+.table { overflow-x: auto; border: 1px solid var(--line); border-radius: 0.5rem; }
+table { width: 100%; border-collapse: collapse; font-family: ui-monospace, "JetBrains Mono", monospace; font-size: 0.9rem; }
+th { text-align: left; font: 600 0.8rem system-ui, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; background: var(--code); }
+th, td { padding: 0.45rem 1rem; white-space: nowrap; }
+tbody td { border-top: 1px solid var(--line); }
+tbody tr:hover { background: var(--code); }
+td a { text-decoration: none; }
+td a:hover, td a:focus-visible { text-decoration: underline; }
+.dir { font-weight: 600; }
+.num { text-align: right; color: var(--muted); }
+th.num { text-align: right; }
+.date { color: var(--muted); }
+footer { margin-top: 1.5rem; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+<h1>${crumbs}<span class="sep">/</span></h1>
+<div class="table">
+<table>
+<thead><tr><th>Name</th><th class="num">Size</th><th>Uploaded (UTC)</th></tr></thead>
+<tbody>
+${rows.join("\n")}
+</tbody>
+</table>
+</div>
+<footer>${dirs.length} ${dirs.length === 1 ? "folder" : "folders"}, ${files.length} ${files.length === 1 ? "file" : "files"}</footer>
+</main>
+</body>
+</html>
+`;
+}
+
+function humanSize(bytes: number): string {
+  const units = ["B", "KiB", "MiB", "GiB"];
+  let size = bytes;
+  let unit = 0;
+  while (size >= 1024 && unit < units.length - 1) {
+    size /= 1024;
+    unit++;
+  }
+  return unit === 0 ? `${size} B` : `${size.toFixed(size < 10 ? 1 : 0)} ${units[unit]}`;
 }
 
 function escape(text: string): string {
