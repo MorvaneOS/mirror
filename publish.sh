@@ -42,7 +42,11 @@ else
 fi
 
 put() {
-    wrangler r2 object put "$BUCKET/$PREFIX/$2" --file "$work/$1" --content-type application/octet-stream --remote
+    local file="$work/$1"
+    # Under WSL, wrangler is usually the Windows npm install, whose node.exe reads
+    # /tmp/... as C:\tmp\...; hand it the \\wsl.localhost\... form instead
+    [[ $(command -v wrangler) == /mnt/* ]] && file=$(wslpath -w "$file")
+    wrangler r2 object put "$BUCKET/$PREFIX/$2" --file "$file" --content-type application/octet-stream --remote
 }
 
 # Packages first, so the database never lists a file that isn't there yet
